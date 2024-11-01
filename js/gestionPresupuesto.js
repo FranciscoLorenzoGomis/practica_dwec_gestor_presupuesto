@@ -65,92 +65,166 @@ function calcularBalance() {
 
 }
 
-function CrearGasto(descripcion, valor, fecha, ...etiquetas) {
-    // TODO
-    this.descripcion = descripcion;
-    this.etiquetas = [];
-    this.anyadirEtiquetas = function (...etiquetas) {
-        for (let i of etiquetas) {
-            let comparar = this.etiquetas.indexOf(i)
-            if (comparar == -1) {
-                this.etiquetas.push(i);
+function filtrarGastos(opciones) {
+    return gastos.filter(function (gasto) {
+        let resultado = true;
+        if (opciones.fechaDesde) {
+            if (gasto.fecha < Date.parse(opciones.fechaDesde)) {
+                resultado = false;
+            }
+
+        }
+
+        if (opciones.fechaHasta) {
+            if (gasto.fecha > Date.parse(opciones.fechaHasta)) {
+                resultado = false;
             }
         }
-    }
-    if (etiquetas.length == 0) {
-        this.etiquetas = [];
-    }
-    else {
-        this.anyadirEtiquetas(...etiquetas);
-    }
-
-    if (typeof fecha === "undefined") {
-        this.fecha = new Date();
-    }
-    else {
-        if (isNaN(Date.parse(fecha))) {
-            this.fecha = new Date();
+        if (opciones.valorMinimo) {
+            if (gasto.valor < opciones.valorMinimo) {
+                resultado = false;
+            }
         }
-        else {
-            this.fecha = Date.parse(fecha);
+
+        if (opciones.valorMaximo) {
+            if (gasto.valor > opciones.valorMaximo) {
+                resultado = false;
+            }
         }
-    }
+        if (opciones.descripcionContiene) {
+            if (!gasto.descripcion.includes(opciones.descripcionContiene)) {
+                resultado = false;
+            }
+        }
+        if (opciones.etiquetasTiene) {
+            let diferenteEtiqueta = true;
+            for (let i in opciones.etiquetasTiene) {
+                for (let j in gasto.etiquetas) {
+                    if (opciones.etiquetasTiene[i] == gasto.etiquetas[j]) {
+                        diferenteEtiqueta = false;
+                    }
+                }
+            }
+            if (diferenteEtiqueta) {
+                resultado = false;
+            }
+        }
+
+        return resultado;
+    });
+}
+
+function agruparGastos(periodo, etiquetas, fechaDesde, fechaHasta) {
+
+    let gastosFiltrados = filtrarGastos({
+        etiquetasTiene: etiquetas,
+        fechaDesde: fechaDesde,
+        fechaHasta: fechaHasta
+    })
+
+    let gastosAgrupacion = gastosFiltrados.reduce(function (acc, gasto) {
+        let periodoAgrupacio = gasto.obtenerPeriodoAgrupacion(periodo)
+        if (!acc[periodoAgrupacio]) {
+            acc[periodoAgrupacio] = 0
+        }
+
+        acc[periodoAgrupacio] += gasto.valor
+        return acc
+    }, {})
+    return gastosAgrupacion
+}
 
 
-    if (valor >= 0 && typeof valor === 'number') {
+function CrearGasto(descripcion, valor, fecha, ...etiquetas) {
+    // TODO
+
+
+    this.descripcion = descripcion;
+
+    if (valor >= 0) {
         this.valor = valor;
-    }
-    else {
+    } else {
         this.valor = 0;
     }
+
+    this.fecha = Date.parse(fecha);
+
+
+    if (isNaN(this.fecha)) {
+        this.fecha = Date.now();
+    }
+
+    this.etiquetas = etiquetas;
+
 
     this.mostrarGasto = function () {
         return `Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €`;
     }
 
-    this.actualizarDescripcion = function (descripcion) {
-        this.descripcion = descripcion;
+    this.actualizarDescripcion = function (nuevaDescripcion) {
+        this.descripcion = nuevaDescripcion;
     }
 
-    this.actualizarValor = function (valor) {
-        if (valor >= 0 && typeof valor === 'number') {
-            this.valor = valor;
+    this.actualizarValor = function (nuevaValor) {
+        if (nuevaValor >= 0) {
+            this.valor = nuevaValor;
+            return nuevaValor;
+        } else {
+            return this.valor;
         }
     }
+
     this.mostrarGastoCompleto = function () {
-        let texto = `Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €.
-Fecha: ${new Date(this.fecha).toLocaleString()}
-Etiquetas:` + "\n";
-        for (let i = 0; i < this.etiquetas.length; i++) {
-            texto += "- " + this.etiquetas[i] + "\n";
+        let mensaje = `Gasto correspondiente a ${this.descripcion} con valor ${this.valor} €.\n`
+        mensaje = mensaje + `Fecha: ${new Date(this.fecha).toLocaleString("")}\n`
+        mensaje = mensaje + `Etiquetas:\n`
+        for (let e of this.etiquetas) {
+            mensaje = mensaje + `- ${e}\n`
         }
-
-        return texto;
+        return mensaje;
     }
 
-
-    this.actualizarFecha = function (fecha) {
-        if (isNaN(Date.parse(fecha))) {
-            this.fecha;
+    this.actualizarFecha = function (nuevaFechaString) {
+        let ts = Date.parse(nuevaFechaString);
+        if (!isNaN(ts)) {
+            this.fecha = ts;
         }
-        else {
-            this.fecha = Date.parse(fecha);
-        }
-
     }
 
-    this.borrarEtiquetas = function (...etiquetas) {
-        for (let i of etiquetas) {
-            let comparar = this.etiquetas.indexOf(i)
-            if (comparar != -1) {
+    this.anyadirEtiquetas = function (...nuevasEtiquetas) {
 
-                this.etiquetas.splice(comparar, 1);
+        for (let etiqueta of nuevasEtiquetas) {
+            if (!this.etiquetas.includes(etiqueta)) {
+                this.etiquetas.push(etiqueta);
             }
         }
-
     }
 
+    this.borrarEtiquetas = function (...etiquetasBorrar) {
+        this.etiquetas = this.etiquetas.filter(function (e) {
+            return !etiquetasBorrar.includes(e)
+        })
+    }
 
+    this.obtenerPeriodoAgrupacion = function (periodo) {
+        let fechaPer;
+
+        if (periodo == "dia") {
+            fechaPer = new Date(fecha).toISOString();
+            fechaPer = fechaPer.substring(0, 10);
+            return fechaPer;
+        }
+        if (periodo == "mes") {
+            fechaPer = new Date(fecha).toISOString();
+            fechaPer = fechaPer.substring(0, 7);
+            return fechaPer;
+        }
+        if (periodo == "anyo") {
+            fechaPer = new Date(fecha).toISOString();
+            fechaPer = fechaPer.substring(0, 4);
+            return fechaPer;
+        }
+    }
 }
 
 
