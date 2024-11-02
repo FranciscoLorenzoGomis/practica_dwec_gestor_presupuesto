@@ -165,10 +165,10 @@ function CrearGasto(descripcion, valor, fecha, ...etiquetas) {
         this.descripcion = nuevaDescripcion;
     }
 
-    this.actualizarValor = function (nuevaValor) {
-        if (nuevaValor >= 0) {
-            this.valor = nuevaValor;
-            return nuevaValor;
+    this.actualizarValor = function (nuevoValor) {
+        if (nuevoValor >= 0) {
+            this.valor = nuevoValor;
+            return nuevoValor;
         } else {
             return this.valor;
         }
