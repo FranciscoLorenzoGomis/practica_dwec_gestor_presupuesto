@@ -1,6 +1,6 @@
 "use strict";
 
-import * as gesPres from "/gestionPresupuesto";
+import * as gesPres from "./gestionPresupuesto";
 
 function mostrarDatoEnId(idElemento, valor) {
 
@@ -137,7 +137,7 @@ function EditarHandle() {
         let arrEtiquetas = etiquetas.split(', ');
         this.gasto.actualizarDescripcion(descripcion);
         this.gasto.actualizarValor(valorbien);
-        this.gasto.actualizarfecha(fechabien);
+        this.gasto.actualizarFecha(fechabien);
         this.gasto.anyadirEtiquetas(...arrEtiquetas);
 
         repintar();

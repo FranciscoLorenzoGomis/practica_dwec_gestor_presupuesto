@@ -1,4 +1,3 @@
-"use strict"
 // TODO: Crear las funciones, objetos y variables indicadas en el enunciado
 
 // TODO: Variable global
