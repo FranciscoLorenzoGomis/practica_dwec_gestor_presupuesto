@@ -1,6 +1,6 @@
 "use strict";
 
-import * as gesPres from "./gestionPresupuesto";
+import * as gesPres from "/gestionPresupuesto";
 
 function mostrarDatoEnId(idElemento, valor) {
 
@@ -36,7 +36,7 @@ function mostrarGastoWeb(idElemento, gasto) {
         let elimitaretiquetassobre = new BorrarEtiquetasHandle();
         elimitaretiquetassobre.gasto = gasto;
         elimitaretiquetassobre.etiqueta = etiqueta;
-        span.addEventListener("click", elimitaretiquetassobre);
+        spanEti.addEventListener("click", elimitaretiquetassobre);
     }
 
 
@@ -46,8 +46,8 @@ function mostrarGastoWeb(idElemento, gasto) {
 
     let botoneditar = document.createElement("button");
     botoneditar.type = "button";
-    botoneditar.className = "gasto-editar";
-    botoneditar.textContent = "Editar";
+    botonborrar.className = "gasto-borrar";
+    botonborrar.textContent = "Borrar";
     let btnedit = new EditarHandle();
     btnedit.gasto = gasto;
     botoneditar.addEventListener("click", btnedit);
@@ -59,9 +59,6 @@ function mostrarGastoWeb(idElemento, gasto) {
     btnborrar.gasto = gasto;
     botonborrar.addEventListener("click", btnborrar);
 }
-
-DivGen.append(botoneditar);
-DivGen.append(botonborrar);
 
 function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo) {
     let div = document.createElement('div');
@@ -93,8 +90,9 @@ function mostrarGastosAgrupadosWeb(idElemento, agrup, periodo) {
 document.getElementById("actualizarpresupuesto").addEventListener("click", botonactualizarpresupuesto);
 document.getElementById("anyadirgasto").addEventListener("click", nuevoGastoWeb);
 function botonactualizarpresupuesto() {
-    let promt = prompt("Introduzca nuevo presupuesto");
-    let nuevopresupuesto = parsefloat(promt);
+    let promtpresupuesto = prompt("Introduzca nuevo presupuesto");
+    promtpresupuesto = parseFloat(promtpresupuesto);
+    let nuevopresupuesto = promtpresupuesto;
     gesPres.actualizarPresupuesto(nuevopresupuesto);
 
     repintar();
@@ -103,13 +101,13 @@ function botonactualizarpresupuesto() {
 function nuevoGastoWeb() {
     let descripcion = prompt("Introduzca descripcion");
     let valor = prompt("Introduzca valor");
-    let valorbien = parsefloat(valor);
+    let valorbien = parseFloat(valor);
     let fecha = prompt("Introduzca fecha");
     let fechabien = new Date(fecha);
     fechabien.toISOString;
     let etiquetas = prompt("Introduzca etiquetas");
     let arrEtiquetas = etiquetas.split(', ');
-    let gastonuevo = new CrearGasto(descripcion, valorbien, fechabien, ...arrEtiquetas);
+    let gastonuevo = new gesPres.CrearGasto(descripcion,valorbien,fechabien,...arrEtiquetas);
 
     gesPres.anyadirGasto(gastonuevo);
 
@@ -131,7 +129,7 @@ function EditarHandle() {
     this.handleEvent = function (e) {
         let descripcion = prompt("Introduzca descripcion");
         let valor = prompt("Introduzca valor");
-        let valorbien = parsefloat(valor);
+        let valorbien = parseFloat(valor);
         let fecha = prompt("Introduzca fecha");
         let fechabien = new Date(fecha);
         fechabien.toISOString;
