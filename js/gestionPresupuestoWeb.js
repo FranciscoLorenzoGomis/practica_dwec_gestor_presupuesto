@@ -43,7 +43,6 @@ function mostrarGastoWeb(idElemento, gasto) {
 
 
 
-
         let elimitaretiquetassobre = new BorrarEtiquetasHandle();
         elimitaretiquetassobre.gasto = gasto;
         elimitaretiquetassobre.etiqueta = etiqueta;
@@ -238,6 +237,7 @@ function BorrarEtiquetasHandle() {
     }
 }
 
+
 function nuevoGastoWebFormulario() {
 
     let plantillaForm = document.getElementById("formulario-template").content.cloneNode(true);;
@@ -258,6 +258,7 @@ function nuevoGastoWebFormulario() {
     btnCancelar.addEventListener("click", handleCancel);
 
     repintar();
+
 }
 
 function enviarnuevoGastoHandleform() {
@@ -275,6 +276,7 @@ function enviarnuevoGastoHandleform() {
         gesPres.anyadirGasto(gasto1);
 
         let anyadirGasto = document.getElementById("anyadirgasto-formulario");
+
         anyadirGasto.disabled = false;
 
         repintar();
@@ -310,9 +312,11 @@ function submiteditformHandle() {
 
 }
 
+
+
 export {
     mostrarDatoEnId,
     mostrarGastoWeb,
-    mostrarGastosAgrupadosWeb
+    mostrarGastosAgrupadosWeb,
 
-} 
+}
