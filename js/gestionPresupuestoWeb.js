@@ -346,6 +346,24 @@ function filtrarGastosWeb(evento) {
     gastosFiltrados.forEach(gasto => mostrarGastoWeb("listado-gastos-completo", gasto));
 }
 
+// Nueva función para guardar los gastos en localStorage
+function guardarGastosWeb() {
+    const gastos = gesPres.listarGastos();
+    localStorage.setItem('GestorGastosDWEC', JSON.stringify(gastos));
+}
+
+// Nueva función para cargar los gastos desde localStorage
+function cargarGastosWeb() {
+    const gastosGuardados = localStorage.getItem('GestorGastosDWEC');
+    const gastos = gastosGuardados ? JSON.parse(gastosGuardados) : [];
+    gesPres.cargarGastos(gastos);
+    repintar();
+}
+
+// Añadir manejadores de eventos para los botones de guardar y cargar
+document.getElementById("guardar-gastos").addEventListener("click", guardarGastosWeb);
+document.getElementById("cargar-gastos").addEventListener("click", cargarGastosWeb);
+
 let formularioFiltrado = document.getElementById("formulario-filtrado");
 formularioFiltrado.addEventListener("submit", filtrarGastosWeb);
 
@@ -353,5 +371,7 @@ export {
     mostrarDatoEnId,
     mostrarGastoWeb,
     mostrarGastosAgrupadosWeb,
-    filtrarGastosWeb
+    filtrarGastosWeb, 
+    guardarGastosWeb, 
+    cargarGastosWeb
 } 
