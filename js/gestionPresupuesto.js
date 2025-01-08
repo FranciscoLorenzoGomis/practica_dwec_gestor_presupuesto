@@ -231,6 +231,20 @@ function transformarListadoEtiquetas(stringEtiquetas) {
     return stringEtiquetas.split(separadores);
 }
 
+function cargarGastos(gastosAlmacenamiento) {
+    // Reseteamos la variable global "gastos"
+    gastos = [];
+    // Procesamos cada gasto del listado pasado a la función
+    for (let g of gastosAlmacenamiento) {
+        // Creamos un nuevo objeto mediante el constructor
+        let gastoRehidratado = new CrearGasto();
+        // Copiamos los datos del objeto guardado en el almacenamiento al gasto rehidratado
+        Object.assign(gastoRehidratado, g);
+        // Añadimos el gasto rehidratado a "gastos"
+        gastos.push(gastoRehidratado);
+    }
+}
+
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
 // Las funciones y objetos deben tener los nombres que se indican en el enunciado
 // Si al obtener el código de una práctica se genera un conflicto, por favor incluye todo el código que aparece aquí debajo
@@ -245,5 +259,6 @@ export {
     calcularBalance,
     filtrarGastos,
     agruparGastos,
-    transformarListadoEtiquetas
+    transformarListadoEtiquetas,
+    cargarGastos
 }
