@@ -88,7 +88,7 @@ function mostrarGastoWeb(idElemento, gasto) {
     botonborrarApi.type = "button";
     botonborrarApi.className = "gasto-borrar-api";
     botonborrarApi.textContent = "Borrar (API)";
-    let btnborrarApi = new BorrarApiHandle();
+    let btnborrarApi = new BorrarApiHandle(gasto);
     btnborrarApi.gasto = gasto;
     botonborrarApi.addEventListener("click", btnborrarApi);
     divGen.append(botonborrarApi);
@@ -398,6 +398,103 @@ async function cargarGastosApi() {
     } else {
 
         alert("Introduce nombre de usuario");
+    }
+}
+
+function BorrarApiHandle(gasto) {
+    this.gasto = gasto; // Asignar el gasto directamente en el constructor
+    this.handleEvent = async () => {
+        console.log('BorrarApiHandle - this.gasto:', this.gasto); // Mensaje de depuración
+        const nombreUsuario = document.getElementById("nombre_usuario").value.trim();
+        const gastoId = this.gasto ? this.gasto.id : null;
+        console.log('Gasto ID:', gastoId); // Mensaje de depuración
+        if (!nombreUsuario) {
+            console.error('Nombre de usuario está vacío');
+            return;
+        }
+        if (gastoId === undefined || gastoId === null) {
+            console.error('Gasto ID is undefined or null');
+            return;
+        }
+        const url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${nombreUsuario}/${gastoId}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await response.json();
+            cargarGastosApi(); // Actualizar la lista en la página
+        } catch (error) {
+            console.error('Hubo un problema con la solicitud Fetch:', error);
+        }
+    }
+}
+
+function EnviarApiHandle() {
+    this.handleEvent = async function(event) {
+        event.preventDefault();
+        const nombreUsuario = document.getElementById("nombre_usuario").value;
+        const url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${nombreUsuario}`;
+        const form = event.currentTarget.closest('form');
+        const data = {
+            descripcion: form.elements.descripcion.value,
+            valor: form.elements.valor.value,
+            fecha: form.elements.fecha.value,
+            etiquetas: form.elements.etiquetas.value.split(',')
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await response.json();
+            cargarGastosApi(); // Actualizar la lista en la página
+        } catch (error) {
+            console.error('Hubo un problema con la solicitud Fetch:', error);
+        }
+    }
+}
+
+function EnviarApiEditHandle() {
+    this.handleEvent = async function(event) {
+        event.preventDefault();
+        const nombreUsuario = document.querySelector('input#nombre_usuario').value;
+        const gastoId = this.gasto.id;
+        const url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${nombreUsuario}/${gastoId}`;
+        const form = event.currentTarget.closest('form');
+        const data = {
+            descripcion: form.elements.descripcion.value,
+            valor: form.elements.valor.value,
+            fecha: form.elements.fecha.value,
+            etiquetas: form.elements.etiquetas.value.split(',')
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await response.json();
+            cargarGastosApi(); // Actualizar la lista en la página
+        } catch (error) {
+            console.error('Hubo un problema con la solicitud Fetch:', error);
+        }
     }
 }
 
