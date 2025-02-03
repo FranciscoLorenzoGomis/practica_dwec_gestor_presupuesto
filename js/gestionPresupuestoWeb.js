@@ -252,8 +252,7 @@ function BorrarEtiquetasHandle() {
 }
 
 function nuevoGastoWebFormulario() {
-
-    let plantillaForm = document.getElementById("formulario-template").content.cloneNode(true);;
+    let plantillaForm = document.getElementById("formulario-template").content.cloneNode(true);
     let form = plantillaForm.querySelector("form");
 
     let formtemplate = document.getElementById("controlesprincipales");
@@ -262,9 +261,15 @@ function nuevoGastoWebFormulario() {
     let botonanyadirform = document.getElementById("anyadirgasto-formulario");
     botonanyadirform.disabled = true;
 
-    let formhandleEnvioboton = new EnviarApiHandle();
-    form.querySelector(".gasto-enviar-api").addEventListener("click", formhandleEnvioboton);
+    // Manejar el envío del formulario
+    let formhandleEnvioboton = new enviarnuevoGastoHandleform();
+    form.addEventListener("submit", formhandleEnvioboton);
 
+    // Añadir manejador de eventos para enviar a la API
+    let formhandleEnviarApiBoton = new EnviarApiHandle();
+    form.querySelector(".gasto-enviar-api").addEventListener("click", formhandleEnviarApiBoton);
+
+    // Manejar la cancelación del formulario
     let handleCancel = new cancelHandle();
     let btnCancelar = form.querySelector("button.cancelar");
     btnCancelar.addEventListener("click", handleCancel);
@@ -404,9 +409,9 @@ async function cargarGastosApi() {
 function BorrarApiHandle(gasto) {
     this.gasto = gasto; // Asignar el gasto directamente en el constructor
     this.handleEvent = async () => {
-        console.log('BorrarApiHandle - this.gasto:', this.gasto); // Mensaje de depuración
-        const nombreUsuario = document.getElementById("nombre_usuario").value.trim();
-        const gastoId = this.gasto ? this.gasto.id : null;
+        console.log('BorrarApiHandle - this.gasto:', this.gasto.id); // Mensaje de depuración
+        const nombreUsuario = document.getElementById("nombre_usuario").value;
+        const gastoId = this.gasto ? this.gasto.id : null; // Usar this.gasto.id en lugar de this.gasto.gastoId
         console.log('Gasto ID:', gastoId); // Mensaje de depuración
         if (!nombreUsuario) {
             console.error('Nombre de usuario está vacío');
@@ -417,6 +422,7 @@ function BorrarApiHandle(gasto) {
             return;
         }
         const url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${nombreUsuario}/${gastoId}`;
+        console.log('URL:', url); // Mensaje de depuración
 
         try {
             const response = await fetch(url, {
@@ -426,6 +432,7 @@ function BorrarApiHandle(gasto) {
                 throw new Error('Network response was not ok');
             }
             await response.json();
+            console.log('Gasto eliminado correctamente'); // Mensaje de depuración
             cargarGastosApi(); // Actualizar la lista en la página
         } catch (error) {
             console.error('Hubo un problema con la solicitud Fetch:', error);
