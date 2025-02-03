@@ -409,19 +409,12 @@ async function cargarGastosApi() {
 function BorrarApiHandle(gasto) {
     this.gasto = gasto; // Asignar el gasto directamente en el constructor
     this.handleEvent = async () => {
-        console.log('BorrarApiHandle - this.gasto:', this.gasto.id); // Mensaje de depuración
         const nombreUsuario = document.getElementById("nombre_usuario").value;
-        const gastoId = this.gasto ? this.gasto.id : null; // Usar this.gasto.id en lugar de this.gasto.gastoId
-        console.log('Gasto ID:', gastoId); // Mensaje de depuración
         if (!nombreUsuario) {
             console.error('Nombre de usuario está vacío');
             return;
         }
-        if (gastoId === undefined || gastoId === null) {
-            console.error('Gasto ID is undefined or null');
-            return;
-        }
-        const url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${nombreUsuario}/${gastoId}`;
+        const url = `https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/${nombreUsuario}/${this.gasto.gastoId}`;
         console.log('URL:', url); // Mensaje de depuración
 
         try {
